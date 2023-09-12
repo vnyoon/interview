@@ -9,7 +9,7 @@
 
 ## 其它
 以及一些其它的简单的题，包括但不限于比如让你使用`map`、`filter`、`forEach`、`reduce`等操作数据得到指定的结果。[其中一些](./05_)，大致如下：
-* 1. 数组操作
+1. 数组操作
 ```js
 function foo(...args) {
   const len = args[0].length;
@@ -33,7 +33,7 @@ console.log(
 //   [ 't-bag', 'shanghai', 20, 'woman' ]
 // ]
 ```
-* 2. var的变量提升
+2. var的变量提升
 ```js
 var msg = 'hello';
 for (var i = 0; i < 10; i++){
@@ -41,7 +41,7 @@ for (var i = 0; i < 10; i++){
 }
 console.log(msg); //hello189
 ```
-* 3. 数组里的最大数
+3. 数组里的最大数
 ```js
 const nums = [3, 44, 11, 2, 111, 22];
 const maxNum = nums.reduce((prev, item) => {
@@ -49,7 +49,7 @@ const maxNum = nums.reduce((prev, item) => {
 }, 0);
 console.log(maxNum);  // 111
 ```
-* 4. let和var的区别
+4. let和var的区别
 ```js
 for (var i = 0; i < 5; ++i) {
   setTimeout(function() {
