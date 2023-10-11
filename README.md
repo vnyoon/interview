@@ -14,5 +14,6 @@
 01. [并发网络请求控制最大数](./popular/01_concurrency-request)
 02. [将 class 转换为 function](./popular/02_convert-class-to-function)
 03. [深拷贝函数的实现 - 全面版本](./popular/03_deep-clone)
+04. [自定义事件总线 - 较全版本](./popular/04_event-bus)
 
 > 在这里，你也可以贡献你的一些面试例题😊。
