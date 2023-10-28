@@ -5,8 +5,9 @@ for (let i = 1; i <= 20; i++) {
 
 /**
  * 
- * @param {请求URL} urls 20
- * @param {最大并发数} maxNum 3
+ * @param {array} 请求URL：20
+ * @param {number} 最大并发数：3
+ * @returns {promise} 
  */
 function concuRequest(urls, maxNum) {
   return new Promise((resolve, reject) => {
