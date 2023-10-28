@@ -1,7 +1,7 @@
 
 /**
  * 
- * @param {星数} r 
+ * @param {number} 星星数 0~5 
  * @returns 
  */
 const rate = (r) => '★★★★★☆☆☆☆☆'.slice(5 - r, 10 - r);
