@@ -51,8 +51,8 @@
 const inputEle = document.querySelector('input');
 
 let counter = 0;
-function searchChange(e) {
-  console.log(`${e.target.value}- 发送了${++counter}次网络请求`);
+function searchChange() {
+  console.log(`发送了${++counter}次网络请求`);
 };
 
 inputEle.oninput = searchChange;
@@ -61,3 +61,45 @@ inputEle.oninput = searchChange;
   src="./images/default-search.png" 
   alt="default-search" 
 />
+
+### 基本实现
+现在需要对它进行防抖操作，创建 `01_debounce-基本实现.js` 文件并引入，文件内容如下：
+```js
+/**
+ * 
+ * @param {function} fn 需要防抖的事件
+ * @param {number} delay 延迟执行的时间(ms)
+ * 
+ * 1. 定义一个定时器，保存上一次的定时器
+ * 2. 创建返回一个真正执行的函数：
+ *  2.1 取消上一次的定时器。
+ *  2.2 延迟执行外部传入的的函数。
+ * 
+ */
+function debounce(fn, delay) {
+  let timer = null;
+
+  function _debounce() {
+    if (timer) clearTimeout(timer);
+
+    timer = setTimeout(fn, delay);
+  };
+
+  return _debounce;
+};
+
+```
+然后通过引入文件，并使用定义的 `debounce` 函数处理input输入的事件。此时，再次快速输入一个"iphone"，会发现在等待 `1s` 后才发送了1次网络请求。
+```html
+<script src="./01_debounce-基本实现.js"></script>
+<script>
+  //...
+
+  let counter = 0;
+  function searchChange() {
+    console.log(`发送了${++counter}次网络请求`);
+  };
+
+  inputEle.oninput = debounce(searchChange, 1000);
+</script>
+```
