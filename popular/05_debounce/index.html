@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Debounce Function</title>
+</head>
+
+<body>
+  <h2>防抖</h2>
+  <input type="text"> 
+
+  <script>
+    const inputEle = document.querySelector('input');
+
+    let counter = 0;
+    function searchChange(e) {
+      console.log(`发送了${++counter}次网络请求`);
+    };
+
+    inputEle.oninput = searchChange;
+  </script>
+</body>
+
+</html>
