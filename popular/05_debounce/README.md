@@ -162,3 +162,74 @@ function debounce(fn, delay) {
 优化使用到的相关特性
 * [函数参数：rest parameter](https://juejin.cn/post/7208765341409116216#heading-20)
 * [this绑定规则：apply](https://juejin.cn/post/7108671776418168863#heading-2)
+
+### 优化立即执行
+前面的防抖函数实现基本上已经足够日常场景中使用了。接下来进一步优化，让函数具有更多功能更强大。改造函数接受第三个参数 `immediate` 用于决定事件函数是否立即触发。
+```js
+/**
+ * 
+ * @param {function} fn 需要防抖的事件
+ * @param {number} delay 延迟执行的时间(ms)
+ * @param {boolean} [immediate = false] 事件函数是否立即触发
+ * 
+ * 1. 定义一个定时器，保存上一次的定时器
+ * 2. 创建返回一个真正执行的函数：
+ *  2.1 取消上一次的定时器。
+ *  2.2 延迟执行外部传入的的函数(事件)。
+ * 
+ * 3. 将不定数量的参数放入到一个数组(args)中。
+ * 4. 给事件函数绑定this，改变this指向调用者。
+ * 
+ * 5. 定义立即执行是否已经调用过了的标识(inInvoke = false)。没调用过的话就立即执行传入的事件函数，然后更改标识为true。
+ * 6. 立即执行过后，事件再次触发就会进入防抖程序中，当防抖执行完毕，就重置标识状态。这样下次再触发事件就会再走一遍这个流程。
+ * 
+ * @returns {function} _debounce
+ * 
+ */
+function debounce(fn, delay, immediate = false) {
+  let timer = null;
+  let inInvoke = false;
+
+  function _debounce(...args) {
+    if (timer) clearTimeout(timer);
+
+    if (immediate && !inInvoke) {
+      fn.apply(this, args);
+      
+      inInvoke = true;
+    }
+    else {
+      timer = setTimeout(() => {
+        fn.apply(this, args);
+
+        inInvoke = false;
+      }, delay);
+    }
+  };
+
+  return _debounce;
+};
+
+```
+
+创建文件 `03_debounce-立即执行.js`，在页面中引入。当输入框输入内容时，立即执行事件函数。然后再输入时就会进入防抖，只有防抖过并执行完毕后，下次再触发事件函数时才会立即执行。
+```html
+  <script src="./03_debounce-立即执行.js"></script>
+  <script>
+    // ...
+
+    // 03_立即执行
+    let counter = 0;
+    function searchChange(event) {
+      console.log('this: ', this); // HTMLInputElement
+      console.log(`事件: ${event.target.value} - 发送了 ${++counter} 次网络请求`);
+    };
+
+    inputEle.oninput = debounce(searchChange, 1000, true);
+  </script>
+```
+<img
+  src="./images/debounce-immediate.gif" 
+  alt="debounce-immediate" 
+  width="80%"
+/>
