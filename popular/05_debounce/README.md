@@ -103,3 +103,62 @@ function debounce(fn, delay) {
   inputEle.oninput = debounce(searchChange, 1000);
 </script>
 ```
+
+### 优化参数
+通过前面代码的基本实现可以做到防抖，只有在 `1s` 内无触发事件才会发送网络请求。
+
+但是，现在的功能函数还并不能满足日常使用的场景。通过在 `searchChange` 打印事件触发的一些参数 `event` 和调用者 `this`，会发现控制台输出的是 `undefined` 和 `Window`。此时可以发现，它存在一些问题。想要拿到正确的信息，这个函数是无能为力的。
+
+所以，需要对它进行优化，创建文件 `02_debounce-参数-this.js`文件。优化后的代码如下：
+```js
+/**
+ * 
+ * @param {function} fn 需要防抖的事件
+ * @param {number} delay 延迟执行的时间(ms)
+ * 
+ * 1. 定义一个定时器，保存上一次的定时器
+ * 2. 创建返回一个真正执行的函数：
+ *  2.1 取消上一次的定时器。
+ *  2.2 延迟执行外部传入的的函数(事件)。
+ * 
+ * 3. 将不定数量的参数放入到一个数组args中。
+ * 4. 给事件函数绑定this，改变this指向调用者。
+ * 
+ */
+function debounce(fn, delay) {
+  let timer = null;
+
+  function _debounce(...args) {
+    if (timer) clearTimeout(timer);
+
+    timer = setTimeout(() => {
+      fn.apply(this, args);
+    }, delay);
+  };
+
+  return _debounce;
+};
+
+
+```
+接着回到 `index.html` 再来引入02文件，使用函数并打印相关参数。可以看到相应内容都能正确获取了！
+```html
+  <script src="./02_debounce-参数-this.js"></script>
+  <script>
+    // ...
+
+    // 02_优化参数
+    let counter = 0;
+    function searchChange(event) {
+      console.log('this: ', this); // HTMLInputElement
+      console.log(`事件: ${event.target.value} - 发送了 ${++counter} 次网络请求`);
+    };
+
+    inputEle.oninput = debounce(searchChange, 1000);
+  </script>
+```
+
+#### 关于
+优化使用到的相关特性
+* [函数参数：rest parameter](https://juejin.cn/post/7208765341409116216#heading-20)
+* [this绑定规则：apply](https://juejin.cn/post/7108671776418168863#heading-2)
