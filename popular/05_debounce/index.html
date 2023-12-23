@@ -11,11 +11,15 @@
   <h2>防抖</h2>
   <input type="text" autofocus> 
 
+  <button id="button">按钮</button>
+
   <!-- <script src="./01_debounce-基本实现.js"></script> -->
   <!-- <script src="./02_debounce-参数-this.js"></script> -->
-  <script src="./03_debounce-立即执行.js"></script>
+  <!-- <script src="./03_debounce-立即执行.js"></script> -->
+  <script src="./04_debounce-取消功能.js"></script>
   <script>
     const inputEle = document.querySelector('input');
+    const btnEle = document.getElementById('button');
 
     // 00_默认情况
     // let counter = 0;
@@ -56,6 +60,22 @@
     // };
 
     // inputEle.oninput = debounce(searchChange, 1000, true);
+
+
+
+    // 04_取消功能
+    // let counter = 0;
+    // function searchChange(event) {
+    //   console.log('this: ', this); // HTMLInputElement
+    //   console.log(`事件: ${event.target.value} - 发送了 ${++counter} 次网络请求`);
+    // };
+
+    // const _debounce = debounce(searchChange, 1000, true);
+    // inputEle.oninput = _debounce;
+    
+    // btnEle.onclick = function() {
+    //   _debounce.cancel();
+    // };
   </script>
 </body>
 

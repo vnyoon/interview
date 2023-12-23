@@ -233,3 +233,79 @@ function debounce(fn, delay, immediate = false) {
   alt="debounce-immediate" 
   width="80%"
 />
+
+### 优化取消功能
+光有立即执行功能可不够，如果判定某次立即执行就已经把结果搜索出来了，就不要再走防抖程序了，把程序取消掉。但注意取消的时候要把是否已经立即执行的标识状态重置掉，这样等再次输入时就会触发立即执行事件，如果开了立即执行开关。
+```js
+/**
+ * 
+ * ...
+ * 
+ * 7. 给真正执行的函数定义一个取消函数属性，取消防抖同时重置标识。
+ * 
+ * @returns {function} _debounce
+ * 
+ */
+function debounce(fn, delay, immediate = false) {
+  let timer = null;
+  let inInvoke = false;
+
+  function _debounce(...args) {
+    if (timer) clearTimeout(timer);
+
+    if (immediate && !inInvoke) {
+      fn.apply(this, args);
+      
+      inInvoke = true;
+    }
+    else {
+      timer = setTimeout(() => {
+        fn.apply(this, args);
+
+        inInvoke = false;
+      }, delay);
+    }
+  };
+
+  _debounce.cancel = function() {
+    if (timer) clearTimeout(timer);
+
+    inInvoke = false;
+  };
+
+  return _debounce;
+};
+
+```
+
+比如一直输入 `iphone` 字段时，当输入 `i` 时有一堆联想词出来了，其中就有想要搜索的关键字 `iphone15`，接着点击这个关键字后页面跳转了，而后面的输入内容 `phone` 就不应该触发网络请求了。
+```html
+
+  <button id="button">按钮</button>
+
+  <script src="./04_debounce-取消功能.js"></script>
+  <script>
+    const btnEle = document.getElementById('button');
+
+    //...
+
+    // 04_取消功能
+    let counter = 0;
+    function searchChange(event) {
+      console.log('this: ', this); // HTMLInputElement
+      console.log(`事件: ${event.target.value} - 发送了 ${++counter} 次网络请求`);
+    };
+
+    const _debounce = debounce(searchChange, 1000, true);
+    inputEle.oninput = _debounce;
+    
+    btnEle.onclick = function() {
+      _debounce.cancel();
+    };
+  </script>
+```
+<img
+  src="./images/debounce-cancel.gif" 
+  alt="debounce-cancel" 
+  width="80%"
+/>
