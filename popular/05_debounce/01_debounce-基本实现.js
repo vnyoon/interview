@@ -8,6 +8,8 @@
  *  2.1 取消上一次的定时器。
  *  2.2 延迟执行外部传入的的函数。
  * 
+ * @returns {function} _debounce
+ * 
  */
 function debounce(fn, delay) {
   let timer = null;

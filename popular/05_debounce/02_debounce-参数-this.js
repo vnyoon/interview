@@ -11,6 +11,8 @@
  * 3. 将不定数量的参数放入到一个数组(args)中。
  * 4. 给事件函数绑定this，改变this指向调用者。
  * 
+ * @returns {function} _debounce
+ * 
  */
 function debounce(fn, delay) {
   let timer = null;
