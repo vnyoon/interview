@@ -309,3 +309,154 @@ function debounce(fn, delay, immediate = false) {
   alt="debounce-cancel" 
   width="80%"
 />
+
+### 函数返回值
+当想要获得执行防抖处理的事件触发函数的返回值时，还有要接着优化。先调整 `HTML` 部分代码：
+```html
+  <script src="./05_debounce-函数返回值.js"></script>
+
+  <script>
+  // ...
+
+  // 05_函数返回值
+  let counter = 0;
+  function searchChange(event) {
+    console.log('this: ', this); // HTMLInputElement
+    console.log(`事件: ${event.target.value} - 发送了 ${++counter} 次网络请求`);
+
+    return {
+      desc: '这是一段描述，是searchChange函数的返回值。'
+    }
+  };
+
+  const _debounce = debounce(searchChange, 1000, true, (result) => {
+    console.log("通过传入回调接受到的返回值：", result);
+  });
+  inputEle.oninput = _debounce;
+  
+  btnEle.onclick = function() {
+    _debounce.cancel();
+  };
+  </script>
+```
+
+#### 普通返回值
+接受第四个参数 `function(){}` 一个回调函数，用来 **接收事件函数触发的返回值**。
+```js
+/**
+ * 
+ * @param {function} fn 需要防抖的事件
+ * @param {number} delay 延迟执行的时间(ms)
+ * @param {boolean} [immediate = false] 事件函数是否立即触发
+ * @param {function} resultCallback 回调函数接收用事件触发函数的返回值
+ * 
+ * 8. 通过回调函数接收并传出真正执行事件函数的返回值。
+ * 
+ * @returns {function} _debounce
+ * 
+ */
+function debounce(fn, delay, immediate = false, resultCallback) {
+  let timer = null;
+  let inInvoke = false;
+
+  function _debounce(...args) {
+    if (timer) clearTimeout(timer);
+
+    if (immediate && !inInvoke) {
+      const result = fn.apply(this, args);
+      
+      inInvoke = true;
+
+      if (resultCallback && typeof resultCallback === 'function') resultCallback(result);
+    }
+    else {
+      timer = setTimeout(() => {
+        const result = fn.apply(this, args);
+
+        inInvoke = false;
+
+        if (resultCallback && typeof resultCallback === 'function') resultCallback(result);
+      }, delay);
+    }
+  };
+
+  _debounce.cancel = function() {
+    if (timer) clearTimeout(timer);
+
+    inInvoke = false;
+  };
+
+  return _debounce;
+};
+
+```
+
+#### Promise返回值
+另一种方式是通过使用 `Promise` 对象，将函数的返回值传出，是为了更好地处理异步操作和获取函数执行结果。在真正执行的函数执行时创建一个Promise，最后将事件函数触发后的返回值返回出去。
+```js
+
+// ...
+function _debounce(...args) {
+  return new Promise((resolve, reject) => {
+    if (timer) clearTimeout(timer);
+
+    if (immediate && !inInvoke) {
+      const result = fn.apply(this, args);
+      
+      inInvoke = true;
+
+      if (resultCallback && typeof resultCallback === 'function') resultCallback(result);
+      resolve(result);
+    }
+    else {
+      timer = setTimeout(() => {
+        const result = fn.apply(this, args);
+
+        inInvoke = false;
+
+        if (resultCallback && typeof resultCallback === 'function') resultCallback(result);
+        resolve(result);
+      }, delay);
+    }
+  })
+};
+
+// ...
+```
+由于真正执行的函数 `_debounce` 返回的是返回值，这里需要调用它并拿到promise成功状态返回的值。
+
+所有还需要一个函数 `tempCallback` 接受input事件的触发的参数，再绑定到 `_debounce2` 函数上。其内部才会拿到正确的值。
+```js
+  // Promise
+  const _debounce2 = debounce(searchChange, 1000, false);
+  const tempCallback = function(event) {
+    _debounce2.call(this, event).then(res => {
+      console.log('通过Promise的返回值结果：', res);
+    })
+  };
+  inputEle.oninput = tempCallback;
+```
+
+## 最后
+综上所述，就是一个防抖函数的完全实现版本了。
+```js
+  // final
+  const _debounce3 = debounce(searchChange, 1000, true, (result) => {
+    console.log("通过传入回调接受到的返回值：", result);
+  });
+  const tempCallback2 = function(event) {
+    _debounce3.call(this, event).then(res => {
+      console.log('通过Promise的返回值结果：', res);
+    })
+  };
+  inputEle.oninput = tempCallback2;
+
+  btnEle.onclick = function() {
+    _debounce3.cancel();
+  };
+```
+<img
+  src="./images/debounce-cancel.gif" 
+  alt="debounce-cancel" 
+  width="80%"
+/>

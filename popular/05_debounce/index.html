@@ -16,7 +16,8 @@
   <!-- <script src="./01_debounce-基本实现.js"></script> -->
   <!-- <script src="./02_debounce-参数-this.js"></script> -->
   <!-- <script src="./03_debounce-立即执行.js"></script> -->
-  <script src="./04_debounce-取消功能.js"></script>
+  <!-- <script src="./04_debounce-取消功能.js"></script> -->
+  <script src="./05_debounce-函数返回值.js"></script>
   <script>
     const inputEle = document.querySelector('input');
     const btnEle = document.getElementById('button');
@@ -76,6 +77,52 @@
     // btnEle.onclick = function() {
     //   _debounce.cancel();
     // };
+
+
+
+    // 05_函数返回值
+    let counter = 0;
+    function searchChange(event) {
+      console.log('this: ', this); // HTMLInputElement
+      console.log(`事件: ${event.target.value} - 发送了 ${++counter} 次网络请求`);
+
+      return {
+        desc: '这是一段描述，是searchChange函数的返回值。'
+      }
+    };
+
+    // function
+    const _debounce = debounce(searchChange, 1000, true, (result) => {
+      console.log("通过传入回调接受到的返回值：", result);
+    });
+    inputEle.oninput = _debounce;
+    
+    btnEle.onclick = function() {
+      _debounce.cancel();
+    };
+
+    // Promise
+    const _debounce2 = debounce(searchChange, 1000, false);
+    const tempCallback = function(event) {
+      _debounce2.call(this, event).then(res => {
+        console.log('通过Promise的返回值结果：', res);
+      })
+    };
+
+    // final
+    const _debounce3 = debounce(searchChange, 1000, true, (result) => {
+      console.log("通过传入回调接受到的返回值：", result);
+    });
+    const tempCallback2 = function(event) {
+      _debounce3.call(this, event).then(res => {
+        console.log('通过Promise的返回值结果：', res);
+      })
+    };
+    inputEle.oninput = tempCallback2;
+
+    btnEle.onclick = function() {
+      _debounce3.cancel();
+    };
   </script>
 </body>
 
